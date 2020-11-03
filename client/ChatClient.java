@@ -37,13 +37,15 @@ public class ChatClient extends AbstractClient
    * @param port The port number to connect on.
    * @param clientUI The interface type variable.
    */
-  
-  public ChatClient(String host, int port, ChatIF clientUI) 
+  String loginID;
+  public ChatClient(String loginID, String host, int port, ChatIF clientUI) 
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
     this.clientUI = clientUI;
+    this.loginID = loginID;
     openConnection();
+    sendToServer("#login "+loginID);
   }
 
   
@@ -78,6 +80,45 @@ public class ChatClient extends AbstractClient
     }
   }
   
+  private void clientCommands(String msg) throws IOException{
+	  String[] splitMsg = msg.split(" ",2);
+	  switch(splitMsg[0]){
+	  	case "#quit": quit();
+	  		break;
+	  	case "#logoff": closeConnection();
+	  		break;
+	  	case "#sethost": 
+	  		if (!isConnected()) {
+	  			setHost(splitMsg[1].replace("<", "").replace(">",""));
+	  		}
+	  		else {
+	  			throw new IOException("Logout before setting a host.");
+	  		}
+	  	case "setport":
+	  		if (!isConnected()) {
+	  			setPort(Integer.parseInt(splitMsg[1].replace("<", "").replace(">","")));
+	  		}
+	  		else {
+	  			throw new IOException("Logout before setting a port.");
+	  		}
+	  	case "#login":
+	  		if (!isConnected()) {
+	  			openConnection();
+	  		}
+	  		else {
+	  			throw new IOException("Logout before logging in.");
+	  		}
+	  	case "#gethost":
+	  		clientUI.display("Host: "+getHost());
+	  		break;
+	  	case "#getport":
+	  		clientUI.display("Port: "+getPort());
+	  	default:
+			  throw new IOException("Command Not Valid");
+	  }
+  }
+  
+  
   /**
    * This method terminates the client.
    */
@@ -90,5 +131,17 @@ public class ChatClient extends AbstractClient
     catch(IOException e) {}
     System.exit(0);
   }
+  
+  protected void connectionException(Exception exception) {
+	  System.out.println("The server has shut down. Quitting...");
+	  connectionClosed();
+  }
+  
+  protected void connectionClosed() {
+	  System.exit(0);
+  }
+  
+  
+  
 }
 //End of ChatClient class
