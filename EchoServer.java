@@ -81,9 +81,10 @@ public class EchoServer extends AbstractServer
    * when the server starts listening for connections.
    */
   boolean serverClosed;
-  protected void serverStarted()
-  {
+  
+  protected void serverStarted(){
     System.out.println("Server listening for connections on port " + getPort());
+    
     serverClosed = false;
   }
   
@@ -91,14 +92,15 @@ public class EchoServer extends AbstractServer
    * This method overrides the one in the superclass.  Called
    * when the server stops listening for connections.
    */
-  protected void serverStopped()
-  {
+  protected void serverStopped(){
     System.out.println("Server has stopped listening for connections.");
+    
     serverClosed = true;
   }
   
-  protected void clientConnected(ConnectionToClient client) {
+  protected void clientConnected(ConnectionToClient client){
 	  System.out.println("Client : "+ client + " has connected.");
+	  
 	  client.setInfo("isFirstMessage", true);
   }
 
@@ -109,9 +111,10 @@ public class EchoServer extends AbstractServer
    *
    * @param client the connection with the client.
    */
-  synchronized protected void clientDisconnected(ConnectionToClient client) {
-	  System.out.println("Client : " + client + " has disconnected.");
+  synchronized protected void clientDisconnected(ConnectionToClient client){
+	  System.out.println("Client : " +client+ " has disconnected");
   }
+  
   synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
 	  clientDisconnected(client);
   }
@@ -131,10 +134,11 @@ public class EchoServer extends AbstractServer
     this.serverUI = serverUI;
   }
   public void handleMessageFromServerUI(String msg){
-	  if(msg.charAt(0) == '#'){
+	  if(msg.charAt(0)=='#'){
 			try{
 				handleServerCommands(msg);
 			}
+			
 			catch(IOException e){
 				System.out.println(e);
 			}
